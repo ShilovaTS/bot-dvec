@@ -33,6 +33,7 @@ class staticVar:
     BUY_TIME = datetime.now()  # сохраняем цену до всех операций для расчитывания профита
 
 
+FILE_SETTING = u'D:\\JOB\\BotDVEC\\my_cryptocoins.json'
 GROW_PERCENT = 0.0020  # процент закупки который хочу 0,33%
 SELL_PERCENT = 0.0065  # процент продажи который хочу 0,33%
 COMMISIOON_PERCENT = 0.0025  # коммисия 0,1%
@@ -75,10 +76,11 @@ def list_active_orders(client, symbol: int):
 
 
 def read_file(symbol):
-    with open('my_cryptocoins.json', 'r') as fr:
+    with open(FILE_SETTING, 'r') as fr:
         # читаем из файла
         lst = json.load(fr)
     fr.close()
+    # print(lst)
     return lst[symbol]
 
 
@@ -89,7 +91,7 @@ def write_file():
     arr_setting['AVG_PRICE'] = staticVar.AVG_PRICE
     arr_setting['BUY_TIME'] = str(staticVar.BUY_TIME)
 
-    with open('my_cryptocoins.json', 'w') as fw:
+    with open(FILE_SETTING, 'w') as fw:
         aList = {symbol: arr_setting}
         json.dump(aList, fw)
     fw.close()
@@ -290,7 +292,7 @@ async def spam_start(client):
                             if staticVar.AVG_PRICE == 0:
                                 staticVar.AVG_PRICE = float(df.loc[nom]['ma_fast'])
                             days = (datetime.now() - staticVar.BUY_TIME).days
-                            new_price_sell = round(analize_price(staticVar.AVG_PRICE, 0, 1, AMOUNT_MORE, days))
+                            new_price_sell = round(analize_price(staticVar.AVG_PRICE, cash, 1, AMOUNT_MORE, days))
                             print(new_price_sell)
                             try:
                                 r = client.new_order(
